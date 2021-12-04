@@ -50,10 +50,16 @@ def input_file():
     return [x for x in lines if x != ""]
 
 def checker(numbers, boards):
+    to_skip = []
     for x in numbers:
         for b in boards:
+            if b in to_skip:
+                continue
             if b.cross(x):
-                return x, b
+                if len(boards) - len(to_skip) > 1:
+                    to_skip.append(b)
+                else:
+                    return x, b
 
 entry = input_file()
 
