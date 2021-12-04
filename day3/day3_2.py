@@ -19,62 +19,37 @@ class GasNode():
         self.leaves.append(new_leaf)
         return new_leaf
 
+    def find_gas(self, gas):
+        if not self.leaves:
+            return self.value
+        if len(self.leaves) == 1:
+            return self.value + self.leaves[0].find_gas(gas)
+        if self.leaves[0].counter > self.leaves[1].counter:
+            to_return = self.leaves[0] if gas == 'oxygen' else self.leaves[1]
+            return self.value + to_return.find_gas(gas)
+        elif self.leaves[1].counter > self.leaves[0].counter:
+            to_return = self.leaves[1] if gas == 'oxygen' else self.leaves[0]
+            return self.value + to_return.find_gas(gas)
+        else:
+            base = "1" if gas == 'oxygen' else "0"
+            return self.value + [branch.find_gas(gas) for branch in self.leaves if branch.value == base][0]
+
+
 
 def input_file():
     with open(f'{ENV}_file.txt') as f:
         lines = [x.strip() for x in f.readlines()]
     return lines
 
-def find_oxygen(root):
-    result = ""
-    branch = root
-    while True:
-        if not branch.leaves:
-            return result
-        if len(branch.leaves) == 1:
-            branch = branch.leaves[0]
-            continue
-        if branch.leaves[0].counter > branch.leaves[1].counter:
-            branch = branch.leaves[0]
-        elif branch.leaves[1].counter > branch.leaves[0].counter:
-            branch = branch.leaves[1]
-        else:
-            if branch.leaves[0].value == "1":
-                branch = branch.leaves[0]
-            else:
-                branch = branch.leaves[1]
-        result += branch.value
-    return result
-
-def find_co2(root):
-    result = ""
-    branch = root
-    while True:
-        if not branch.leaves:
-            return result
-        if len(branch.leaves) == 1:
-            branch = branch.leaves[0]
-        elif branch.leaves[0].counter < branch.leaves[1].counter:
-            branch = branch.leaves[0]
-        elif branch.leaves[1].counter < branch.leaves[0].counter:
-            branch = branch.leaves[1]
-        else:
-            if branch.leaves[0].value == "0":
-                branch = branch.leaves[0]
-            else:
-                branch = branch.leaves[1]
-        result += branch.value
-    return result
-
 def calculate_ratings():
 
-    root = GasNode(None)
+    root = GasNode("")
 
     for x in input_file():
         branch = root
         for c in x:
             branch = branch.add_leaf(c)
 
-    return int(find_co2(root), 2)*int(find_oxygen(root), 2)
+    return int(root.find_gas('oxygen'), 2)*int(root.find_gas('co2'), 2)
 
 print(calculate_ratings())
