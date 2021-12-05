@@ -10,14 +10,6 @@ def input_file():
         res.append([list(map(int, x.split(","))) for x in coord.split(" -> ")])
     return res
 
-
-def filter(array):
-    filtered = []
-    for coords in array:
-        if (coords[0][0] == coords[1][0]) or (coords[0][1] == coords[1][1]):
-            filtered.append(coords)
-    return filtered
-
 class Scanner():
     def __init__(self, array):
         self.findings = {}
@@ -30,12 +22,28 @@ class Scanner():
                 self.findings[x] = self.findings.get(x, 0) + 1
 
     def draw_line(self, coords):
-        lower_x = min(coords[0][0], coords[1][0])
-        higher_x = max(coords[0][0], coords[1][0])+1
-        for x in range(lower_x, higher_x):
-            lower_y = min(coords[0][1], coords[1][1])
-            higher_y = max(coords[0][1], coords[1][1]) + 1
-            for y in range(lower_y, higher_y):
+        step_x = 1 if coords[0][0] < coords[1][0] else -1
+        step_y = 1 if coords[0][1] < coords[1][1] else -1
+        range_x = range(coords[0][0], coords[1][0] + step_x, step_x)
+        range_y = range(coords[0][1], coords[1][1] + step_y, step_y)
+
+        if (coords[0][0] == coords[1][0]) or (coords[0][1] == coords[1][1]):
+            func = self.draw_straight
+        else:
+            func = self.draw_diagonal
+        for x in func(range_x, range_y):
+            yield x
+
+
+    def draw_diagonal(self, range_x, range_y):
+
+        for i,x in enumerate(range_x):
+            y = range_y[i]
+            yield f"{x},{y}"
+
+    def draw_straight(self, range_x, range_y):
+        for x in range_x:
+            for y in range_y:
                 yield f"{x},{y}"
 
     def hot_spots(self):
@@ -46,8 +54,5 @@ class Scanner():
                 count += 1
         return count
 
-filtered_array = filter(input_file())
-print(filtered_array)
-a = Scanner(filtered_array)
+a = Scanner(input_file())
 print(a.hot_spots())
-print(list(a.findings.values()).count(4))
