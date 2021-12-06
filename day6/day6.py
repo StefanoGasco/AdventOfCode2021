@@ -1,18 +1,23 @@
 
 
-class LanternFish():
-    def __init__(self, days):
-        self.days = days
-
-    def __repr__(self):
-        return str(self.days)
+class School():
+    def __init__(self, school):
+        self.school = school
+        self.count = len(self.school)
+        self.deliveries = {}
+        for x in range(9):
+            self.deliveries[x] = self.school.count(x)
 
     def day_pass(self):
-        self.days -= 1
-        if self.days < 0:
-            self.days = 6
-            return True
-        return False
+        restart = self.deliveries[0]
+        for x in range(1, 9):
+            self.deliveries[x-1] = self.deliveries[x]
+        self.deliveries[6] += restart
+        self.deliveries[8] = restart
+        self.count += restart
+
+
+
 
 ENV = 'real'
 
@@ -21,11 +26,7 @@ def input_file():
         lines = [x.strip() for x in f.readlines()]
     return [int(x) for x in lines[0].split(",")]
 
-school = [LanternFish(x) for x in input_file()]
-
-for _ in range(80):
-    for i in range(len(school)):
-        if school[i].day_pass():
-            school.append(LanternFish(8))
-
-print(len(school))
+a = School(input_file())
+for _ in range(256):
+    a.day_pass()
+print(a.count)
