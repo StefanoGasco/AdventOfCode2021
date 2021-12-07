@@ -11,7 +11,8 @@ def mid(n):
 
 def distances(array, x):
     for i in array:
-        yield abs(x-i)
+        n = abs(x - i)
+        yield (n * (n + 1)) // 2
 
 def split(n):
     return n//2, n+n//2
