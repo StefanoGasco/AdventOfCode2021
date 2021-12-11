@@ -52,18 +52,18 @@ for row in matrix:
     for d in row:
         d.add_neighbours()
 
-for _ in range(100):
+aligned = False
+c = 0
+while not aligned:
+    c+= 1
     for row in matrix:
         for d in row:
             d.step()
     for row in matrix:
         for d in row:
             d.check_energy_level()
+    first = [x.energy_level for x in matrix[0]]
+    aligned = all([first == [x.energy_level for x in y] for y in matrix])
 
-c = 0
-
-for row in matrix:
-    for d in row:
-        c += d.flashes
 
 print(c)
