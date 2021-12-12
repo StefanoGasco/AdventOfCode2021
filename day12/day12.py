@@ -8,6 +8,7 @@ def input_file():
     return lines
 
 visited = []
+double = []
 
 class Node():
     def __init__(self, value):
@@ -29,10 +30,15 @@ class Node():
     def visit(self):
         res = 0
         if self.value.islower() and self.value not in ["start", "end"]:
-            visited.append(self)
+            if self not in visited:
+                visited.append(self)
+            elif self in visited and len(double) == 0:
+                double.append(self)
         if self.connections != []:
             for node in self.connections:
                 if node not in visited:
+                    res += node.visit()
+                elif node in visited and len(double) == 0:
                     res += node.visit()
         else:
             if self.value == "end":
@@ -40,7 +46,10 @@ class Node():
             else:
                 return 0
         if self.value.islower() and self.value not in ["start", "end"]:
-            visited.remove(self)
+            if self in double:
+                double.remove(self)
+            elif self in visited:
+                visited.remove(self)
         return res
 
 connections = input_file()
