@@ -15,15 +15,31 @@ map_coords = {
     "x": 0,
     "y": 1
 }
-coords, folds = input_file()
-res = set()
 
-coord_index = map_coords[folds[0][0]]
-for coord in coords:
-    if coord[coord_index] >= folds[0][1]:
-        coord[coord_index] = folds[0][1] - ((coord[coord_index] - folds[0][1]))
-        res.add(tuple(coord))
-    else:
-        res.add(tuple(coord))
-print(len(res))
-print(res)
+def map_folding(coords, threshold):
+    res = set()
+    for coord in coords:
+        if coord[coord_index] >= threshold:
+            coord[coord_index] = threshold - ((coord[coord_index] - threshold))
+            res.add(tuple(coord))
+        else:
+            res.add(tuple(coord))
+    return [list(x) for x in res]
+
+def printer(coords):
+    max_x, max_y = max([[x[0], x[1]] for x in coords])
+    for y in range(max_y+1):
+        for x in range(max_x+1):
+            if [x, y] in coords:
+                print("#", end="")
+            else:
+                print(" ", end="")
+        print()
+
+coords, folds = input_file()
+
+for fold in folds:
+    coord_index = map_coords[fold[0]]
+    coords = map_folding(coords, fold[1])
+
+printer(coords)
